@@ -11,7 +11,7 @@ import time
 
 newegg = "https://www.newegg.com/p/pl?N=100007709%20601357282&PageSize=96"
 bestbuy = "https://www.bestbuy.com/site/computer-cards-components/video-graphics-cards/abcat0507002.c?id=abcat0507002&qp=gpusv_facet%3DGraphics%20Processing%20Unit%20(GPU)~NVIDIA%20GeForce%20RTX%203070%5Egpusv_facet%3DGraphics%20Processing%20Unit%20(GPU)~NVIDIA%20GeForce%20RTX%203080"
-pb = PushBullet('o.mY3NIYGcVPL6y8d25VvjihE7hejOoh9k')
+pb = PushBullet('(Pushbullet encryption key)')
 
 opts = EdgeOptions()
 opts.use_chromium = True
