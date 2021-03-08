@@ -30,7 +30,8 @@ services:
       
       # redirect port 53/udp incoming to port 45001
       - "--entrypoints.udpdns.address=:45000/udp"
-
+      
+      # Let's Encrypt cert requirements
       - "--certificatesresolvers.myresolver.acme.tlschallenge=true"
       - "--certificatesresolvers.myresolver.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory"
       - "--certificatesresolvers.myresolver.acme.email=${EMAIL}
@@ -57,6 +58,8 @@ services:
 
     labels:
       - "traefik.enable=true"
+      
+      # Web Dashboard
       - "traefik.http.routers.dashboard.rule=Host(`your-domain.com`)"
       - "traefik.http.routers.dashboard.tls=true"
       - "traefik.http.routers.dashboard.tls.certresolver=myresolver"
