@@ -1,0 +1,71 @@
+####### Traefik_compose ######################
+
+version: "3.3"
+
+services:
+
+  traefik:
+    image: "traefik:latest"
+    restart: unless-stopped
+    container_name: traefik
+    command:
+      - "--log.level=ERROR"
+      - "--api.dashboard=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      
+      # redirect port 80 incoming to port 40001
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.web.http.redirections.entrypoint.to=443_port_secure"
+      
+      # redirect port 443 incoming to port 40001
+      - "--entrypoints.websecure.address=:443"
+      - "--entrypoints.websecure.http.redirections.entrypoint.to=443_port_secure"
+      - "--entrypoints.443_port_secure.address=:40001"
+      
+      # redirect port 53 incoming to port 45000
+      - "--entrypoints.dns.address=:53"
+      - "--entrypoints.dns.http.redirections.entrypoint.to=53_port_secure"
+      - "--entrypoints.53_port_secure.address=:45000"
+      
+      # redirect port 53/udp incoming to port 45001
+      - "--entrypoints.udpdns.address=:45000/udp"
+
+      - "--certificatesresolvers.myresolver.acme.tlschallenge=true"
+      - "--certificatesresolvers.myresolver.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory"
+      - "--certificatesresolvers.myresolver.acme.email=${EMAIL}
+      - "--certificatesresolvers.myresolver.acme.storage=/acme.json"
+      - "--certificatesresolvers.myresolver.acme.httpchallenge.entrypoint=web"
+      - "--certificatesresolvers.myresolver.acme.dnschallenge.provider=cloudflare"
+      
+    networks:
+      - web
+      
+    ports:
+      - "53:45000"
+      - "53:45000/udp"
+      - "80:80"
+      - "443:40001"
+      
+    volumes:
+      - "${ACME_FILE}:/acme.json"
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+
+    environment:
+      - CLOUDFLARE_EMAIL=${CLOUDFLARE_EMAIL}
+      - CLOUDFLARE_API_KEY=${CLOUDFLARE_API_KEY}
+
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.dashboard.rule=Host(`your-domain.com`)"
+      - "traefik.http.routers.dashboard.tls=true"
+      - "traefik.http.routers.dashboard.tls.certresolver=myresolver"
+      - "traefik.http.routers.dashboard.entrypoints=443_port_secure"
+      - "traefik.http.routers.dashboard.middlewares=auth"
+      - "traefik.http.middlewares.auth.basicauth.users=${AUTHPASS}"
+      - "traefik.http.routers.dashboard.service=api@internal"
+      - "traefik.http.services.api@internal.loadbalancer.server.port=443"
+
+networks:
+  web:
+    external: true
