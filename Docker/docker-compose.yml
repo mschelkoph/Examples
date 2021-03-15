@@ -1,0 +1,56 @@
+version: "3"
+
+services:
+  pihole:
+    image: pihole/pihole:latest
+    container_name: pihole
+
+    networks:
+      - web
+
+    dns:
+      - 127.0.0.1
+      - 1.1.1.1
+
+    environment:
+      TZ: 'America/Chicago'
+      WEBPASSWORD: ${WEBPASS}
+
+    volumes:
+      - './etc-pihole/:/etc/pihole/'
+      - './etc-dnsmasq.d/:/etc/dnsmasq.d/'
+
+    restart: unless-stopped
+
+    labels:
+      - "traefik.enable=true"
+
+      # web interface
+      - "traefik.http.routers.pihole_router.rule=Host(`pihole.mrschelkoph.com`)"
+      - "traefik.http.routers.pihole_router.tls=true"
+      - "traefik.http.routers.pihole_router.tls.certresolver=myresolver"
+      - "traefik.http.routers.pihole_router.entrypoints=443_port_secure"
+      - "traefik.http.routers.pihole_router.middlewares=auth"
+      - "traefik.http.middlewares.auth.basicauth.users=${AUTHPASS}"
+      - "traefik.http.routers.pihole_router.service=pihole"
+      - "traefik.http.services.pihole.loadbalancer.server.port=80"
+
+      #tcp
+      - "traefik.tcp.routers.pihole_53_tcp.rule=HostSNI(`*`)"
+      - "traefik.tcp.routers.pihole_53_tcp.entrypoints=53_port_secure"
+      - "traefik.tcp.routers.pihole_53_tcp.service=pihole"
+      - "traefik.tcp.services.pihole.loadbalancer.server.port=53"
+
+      - "traefik.tcp.routers.pihole_443_tcp.rule=HostSNI(`*`)"
+      - "traefik.tcp.routers.pihole_443_tcp.entrypoints=443_port_secure"
+      - "traefik.tcp.routers.pihole_443_tcp.service=pihole"
+      - "traefik.tcp.services.pihole.loadbalancer.server.port=443"
+
+      #udp
+      - "traefik.udp.routers.pihole_53_udp.entrypoints=udpdns"
+      - "traefik.udp.routers.pihole_53_udp.service=pihole"
+      - "traefik.udp.services.pihole.loadbalancer.server.port=53"   
+
+networks:
+  web:
+    external: true
