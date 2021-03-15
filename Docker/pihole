@@ -26,7 +26,7 @@ services:
       - "traefik.enable=true"
 
       # web interface
-      - "traefik.http.routers.pihole_router.rule=Host(`pihole.mrschelkoph.com`)"
+      - "traefik.http.routers.pihole_router.rule=Host(`your.website.com`)"
       - "traefik.http.routers.pihole_router.tls=true"
       - "traefik.http.routers.pihole_router.tls.certresolver=myresolver"
       - "traefik.http.routers.pihole_router.entrypoints=443_port_secure"
