@@ -1,0 +1,87 @@
+version: "3"
+
+services:
+
+  plex:
+    image: "plexinc/pms-docker:latest"
+    restart: unless-stopped
+    container_name: plex
+    hostname: 'mrplexserver'
+
+    networks:
+      - web
+    
+    volumes:
+      - "/home/mschelkoph/docker/plex:/config"
+      - "/home/mschelkoph/docker/plex:/transcode"
+      - "/home/mschelkoph/docker/plex/media:/data"
+
+    environment:
+      - TZ="America/Chicago"        
+      - PLEX_CLAIM=${PLEXCLAIM}
+      - ADVERTIZE_IP="https://plex.mrschelkoph.com:32400/"
+
+    labels:
+      - "traefik.enable=true"
+
+      - "traefik.http.routers.plex_router.rule=Host(`plex.mrschelkoph.com`)"
+      - "traefik.http.routers.plex_router.tls=true"
+      - "traefik.http.routers.plex_router.tls.certresolver=myresolver"
+      - "traefik.http.routers.plex_router.entrypoints=32400_port_secure"
+#      - "traefik.http.routers.plex_router.middlewares=auth"
+#      - "traefik.http.middlewares.auth.basicauth.users=${AUTHPASS}"
+      - "traefik.http.routers.plex_router.service=plex"
+      - "traefik.http.services.plex.loadbalancer.server.port=32400"
+
+    #TCP
+
+#      - "traefik.tcp.routers.plex_3005.rule=HostSNI(`*`)"
+#      - "traefik.tcp.routers.plex_3005.entrypoints=3005_port_secure"
+#      - "traefik.tcp.routers.plex_3005.service=plex"
+#      - "traefik.tcp.services.plex.loadbalancer.server.port=3005"
+
+#      - "traefik.tcp.routers.plex_8324.rule=HostSNI(`*`)"
+#      - "traefik.tcp.routers.plex_8324.entrypoints=8324_port_secure"
+#      - "traefik.tcp.routers.plex_8324.service=plex"
+#      - "traefik.tcp.services.plex.loadbalancer.server.port=8324"
+
+#      - "traefik.tcp.routers.plex_32400.rule=HostSNI(`*`)"
+#      - "traefik.tcp.routers.plex_32400.tls=true"
+#      - "traefik.tcp.routers.plex_32400.entrypoints=32400_port_secure"
+#      - "traefik.tcp.routers.plex_32400.service=plex"
+#      - "traefik.tcp.services.plex.loadbalancer.server.port=32400"
+
+#      - "traefik.tcp.routers.plex_32469.rule=HostSNI(`*`)"
+#      - "traefik.tcp.routers.plex_32469.entrypoints=32469_port_secure"
+#      - "traefik.tcp.routers.plex_32469.service=plex"
+#      - "traefik.tcp.services.plex.loadbalancer.server.port=32469"
+   
+   # UDP
+
+#      - "traefik.udp.routers.plex_1900.entrypoints=1900_udp_port_secure"
+#      - "traefik.udp.routers.plex_1900.service=plex"
+#      - "traefik.udp.services.plex.loadbalancer.server.port=1900"
+
+#      - "traefik.udp.routers.plex_32400.entrypoints=udpdns"
+#      - "traefik.udp.routers.plex_32400.service=plex"
+#      - "traefik.udp.services.plex.loadbalancer.server.port=32400"
+
+      - "traefik.udp.routers.plex_32410.entrypoints=32410_udp_port_secure"
+      - "traefik.udp.routers.plex_32410.service=plex"
+      - "traefik.udp.services.plex.loadbalancer.server.port=32410"
+
+      - "traefik.udp.routers.plex_32412.entrypoints=32412_udp_port_secure"
+      - "traefik.udp.routers.plex_32412.service=plex"
+      - "traefik.udp.services.plex.loadbalancer.server.port=32412"
+
+      - "traefik.udp.routers.plex_32413.entrypoints=32413_udp_port_secure"
+      - "traefik.udp.routers.plex_32413.service=plex"
+      - "traefik.udp.services.plex.loadbalancer.server.port=32413"
+
+      - "traefik.udp.routers.plex_32414.entrypoints=32414_udp_port_secure"
+      - "traefik.udp.routers.plex_32414.service=plex"
+      - "traefik.udp.services.plex.loadbalancer.server.port=32414"
+
+networks:
+  web:
+    external: true
