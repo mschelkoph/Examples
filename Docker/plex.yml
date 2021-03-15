@@ -19,12 +19,12 @@ services:
     environment:
       - TZ="America/Chicago"        
       - PLEX_CLAIM=${PLEXCLAIM}
-      - ADVERTIZE_IP="https://plex.mrschelkoph.com:32400/"
+      - ADVERTIZE_IP="https://plex.your-website:32400/"
 
     labels:
       - "traefik.enable=true"
 
-      - "traefik.http.routers.plex_router.rule=Host(`plex.mrschelkoph.com`)"
+      - "traefik.http.routers.plex_router.rule=Host(`plex.your-website.com`)"
       - "traefik.http.routers.plex_router.tls=true"
       - "traefik.http.routers.plex_router.tls.certresolver=myresolver"
       - "traefik.http.routers.plex_router.entrypoints=32400_port_secure"
