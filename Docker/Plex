@@ -1,0 +1,56 @@
+version: "3"
+
+services:
+
+  plex:
+    image: "plexinc/pms-docker:latest"
+    restart: unless-stopped
+    container_name: plex
+    hostname: 'mrplexserver'
+
+    networks:
+      - web
+    
+    volumes:
+      - "/your/directory/plex:/config"
+      - "/your/directory/plex:/transcode"
+      - "/your/directory/plex/media:/data"
+
+    environment:
+      - TZ="America/Chicago"        
+      - PLEX_CLAIM=${PLEXCLAIM}
+      - ADVERTIZE_IP="https://plex.your-website.com:32400/"
+
+    labels:
+      - "traefik.enable=true"
+
+      - "traefik.http.routers.plex_router.rule=Host(`plex.your-website.com`)"
+      - "traefik.http.routers.plex_router.tls=true"
+      - "traefik.http.routers.plex_router.tls.certresolver=myresolver"
+      - "traefik.http.routers.plex_router.entrypoints=32400_port_secure"
+#      - "traefik.http.routers.plex_router.middlewares=auth"
+#      - "traefik.http.middlewares.auth.basicauth.users=${AUTHPASS}"
+      - "traefik.http.routers.plex_router.service=plex"
+      - "traefik.http.services.plex.loadbalancer.server.port=32400"
+   
+   # UDP
+
+      - "traefik.udp.routers.plex_32410.entrypoints=32410_udp_port_secure"
+      - "traefik.udp.routers.plex_32410.service=plex"
+      - "traefik.udp.services.plex.loadbalancer.server.port=32410"
+
+      - "traefik.udp.routers.plex_32412.entrypoints=32412_udp_port_secure"
+      - "traefik.udp.routers.plex_32412.service=plex"
+      - "traefik.udp.services.plex.loadbalancer.server.port=32412"
+
+      - "traefik.udp.routers.plex_32413.entrypoints=32413_udp_port_secure"
+      - "traefik.udp.routers.plex_32413.service=plex"
+      - "traefik.udp.services.plex.loadbalancer.server.port=32413"
+
+      - "traefik.udp.routers.plex_32414.entrypoints=32414_udp_port_secure"
+      - "traefik.udp.routers.plex_32414.service=plex"
+      - "traefik.udp.services.plex.loadbalancer.server.port=32414"
+
+networks:
+  web:
+    external: true
