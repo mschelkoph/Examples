@@ -53,7 +53,7 @@ services:
       # HTTPS 
       - "--certificatesresolvers.myresolver.acme.tlschallenge=true"
       - "--certificatesresolvers.myresolver.acme.caserver=https://acme-v02.api.letsencrypt.org/directory"
-      - "--certificatesresolvers.myresolver.acme.email=mschelkoph@gmail.com"
+      - "--certificatesresolvers.myresolver.acme.email=your@eamil.com"
       - "--certificatesresolvers.myresolver.acme.storage=/acme.json"
       - "--certificatesresolvers.myresolver.acme.httpchallenge.entrypoint=web"
       - "--certificatesresolvers.myresolver.acme.dnschallenge.provider=cloudflare"
@@ -77,7 +77,7 @@ services:
       - "32414:45005/udp"
 
     volumes:
-      - "/home/mschelkoph/docker/traefik/acme.json:/acme.json"
+      - "/your/directory/acme.json:/acme.json"
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
 
     environment:
@@ -86,7 +86,7 @@ services:
       
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.dashboard.rule=Host(`mrschelkoph.com`)"
+      - "traefik.http.routers.dashboard.rule=Host(`your-website.com`)"
       - "traefik.http.routers.dashboard.tls=true"
       - "traefik.http.routers.dashboard.tls.certresolver=myresolver"
       - "traefik.http.routers.dashboard.entrypoints=443_port_secure"
