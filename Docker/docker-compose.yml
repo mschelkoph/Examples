@@ -1,0 +1,100 @@
+version: "3"
+
+services:
+
+  traefik:
+    image: "traefik:latest"
+    restart: unless-stopped
+    container_name: traefik
+
+    command:
+      - "--log.level=ERROR"
+      - "--api.dashboard=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      # redirect port 80 incoming to port 40000
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.web.http.redirections.entrypoint.to=443_port_secure"
+      # redirect port 443 incoming to port 40001
+      - "--entrypoints.websecure.address=:443"
+      - "--entrypoints.websecure.http.redirections.entrypoint.to=443_port_secure"
+      - "--entrypoints.443_port_secure.address=:40001"
+      # redirect port 53 incoming to port 45000
+      - "--entrypoints.dns.address=:53"
+      - "--entrypoints.dns.http.redirections.entrypoint.to=53_port_secure"
+      - "--entrypoints.53_port_secure.address=:45000"
+      # redirect port 53/udp incoming to port 45000
+      - "--entrypoints.udpdns.address=:45000/udp"
+      # redirect port 32400 incoming to port 45001
+      - "--entrypoints.plex_32400.address=:32400"
+      - "--entrypoints.plex_32400.http.redirections.entrypoint.to=32400_port_secure"
+      - "--entrypoints.32400_port_secure.address=:45001"
+      # redirect port 32410 incoming to port 45002
+      - "--entrypoints.plex_32410.address=:32410"
+      - "--entrypoints.plex_32410.http.redirections.entrypoint.to=32410_port_secure"
+      - "--entrypoints.32410_port_secure.address=:45002"
+      - "--entrypoints.32410_udp_port_secure.address=:45002/udp"
+      # redirect port 32412 incoming to port 45003
+      - "--entrypoints.plex_32412.address=:32412"
+      - "--entrypoints.plex_32412.http.redirections.entrypoint.to=32412_port_secure"
+      - "--entrypoints.32412_port_secure.address=:45003"
+      - "--entrypoints.32412_udp_port_secure.address=:45003/udp"
+      # redirect port 32413 incoming to port 45004
+      - "--entrypoints.plex_32413.address=:32413"
+      - "--entrypoints.plex_32413.http.redirections.entrypoint.to=32413_port_secure"
+      - "--entrypoints.32413_port_secure.address=:45004"
+      - "--entrypoints.32413_udp_port_secure.address=:45004/udp"
+      # redirect port 32414 incoming to port 45005
+      - "--entrypoints.plex_32414.address=:32414"
+      - "--entrypoints.plex_32414.http.redirections.entrypoint.to=32414_port_secure"
+      - "--entrypoints.32414_port_secure.address=:45005"
+      - "--entrypoints.32414_udp_port_secure.address=:45005/udp"
+      
+      # HTTPS 
+      - "--certificatesresolvers.myresolver.acme.tlschallenge=true"
+      - "--certificatesresolvers.myresolver.acme.caserver=https://acme-v02.api.letsencrypt.org/directory"
+      - "--certificatesresolvers.myresolver.acme.email=mschelkoph@gmail.com"
+      - "--certificatesresolvers.myresolver.acme.storage=/acme.json"
+      - "--certificatesresolvers.myresolver.acme.httpchallenge.entrypoint=web"
+      - "--certificatesresolvers.myresolver.acme.dnschallenge.provider=cloudflare"
+
+    networks:
+      - web
+
+    ports:
+      - "53:45000"
+      - "53:45000/udp"
+      - "80:80"
+      - "443:40001"
+      - "32400:45001"
+      - "32410:45002"
+      - "32410:45002/udp"
+      - "32412:45003"
+      - "32412:45003/udp"
+      - "32413:45004"
+      - "32413:45004/udp"
+      - "32414:45005"
+      - "32414:45005/udp"
+
+    volumes:
+      - "/home/mschelkoph/docker/traefik/acme.json:/acme.json"
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+
+    environment:
+      - CLOUDFLARE_EMAIL=${CLOUDFLARE_EMAIL}
+      - CLOUDFLARE_API_KEY=${CLOUDFLARE_API_KEY}
+      
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.dashboard.rule=Host(`mrschelkoph.com`)"
+      - "traefik.http.routers.dashboard.tls=true"
+      - "traefik.http.routers.dashboard.tls.certresolver=myresolver"
+      - "traefik.http.routers.dashboard.entrypoints=443_port_secure"
+      - "traefik.http.routers.dashboard.middlewares=auth"
+      - "traefik.http.middlewares.auth.basicauth.users=${AUTHPASS}"
+      - "traefik.http.routers.dashboard.service=api@internal"
+      - "traefik.http.services.api@internal.loadbalancer.server.port=443"
+
+networks:
+  web:
+    external: true
