@@ -13,4 +13,4 @@ This is a basic collection of some school and personal projects I've completed.
   - First folder contains my 1-learning ML model for music generation. This was my Capstone Project for my Undergraduate degree.
   - The other files are further examples for you to look at.
     - HammingCode.py was a way for me to better understand the Hamming Algorithm for error checking.  What better way than to write a program!
-    - 
+    - websiteparser.py
