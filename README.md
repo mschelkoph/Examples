@@ -23,4 +23,4 @@ I realize that a lot of my uploads are pretty old, and it doesn't seem like much
 I plan on uploading these projects upon completion.
 
 
-###### Thank you very much for taking a look at my work!
+# Thank you very much for taking a look at my work!
