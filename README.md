@@ -15,7 +15,7 @@ This is a collection of some school and personal projects I've completed.
     - HammingCode.py was a way for me to better understand the Hamming Algorithm for error checking.  What better way than to write a program!
     - WebsiteParsing.py was mostly practice with Selenium and multi-processing, but I was also very interested in the new graphics cards, so it was a Win-Win for me :).
 
-Current projects include:
+##Current projects include:
   - building up my Full-Stack development skills with a personal website using django and React frameworks.
   - further advancements on my home server, which will also be hosting the above website when completed.
   - continued development on ML techniques.
